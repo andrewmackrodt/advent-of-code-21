@@ -1,0 +1,39 @@
+#!/bin/bash
+IFS=$'\n\t'
+set -e
+cd "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+
+function build() {
+  clean
+  cd src
+  for d in $(find . -mindepth 1 -maxdepth 1 -type d); do
+    echo -n "Building $d .. "
+    cd "$d"
+    mkdir -p "../../out/$d"
+    tsc --outDir "../../out/$d"
+    find . -mindepth 1 -maxdepth 1 -type f -not -name '*.ts' -exec cp {} "../../out/$d" \;
+    echo "ok"
+    cd ..
+  done
+  cd ..
+}
+
+function clean() {
+  if [[ -d "out" ]]; then
+    find "out" -xdev -type f -delete
+    find "out" -xdev -type d -delete
+  fi
+}
+
+function solve() {
+  local name="0$1"
+  name=${name: -2}
+  node -r ts-node/register/transpile-only "src/$name"
+}
+
+case "${1:-build}" in
+  build ) build ;;
+  clean ) clean ;;
+  solve ) shift; solve "$@" ;;
+  * ) echo "ERROR" >&2 && exit 1
+esac

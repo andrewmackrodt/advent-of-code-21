@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "baseUrl": "./src",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "strict": true,
+    "target": "es2018"
+  },
+  "exclude": [
+    "**/*.test.ts",
+    "./jest.config.ts"
+  ]
+}
