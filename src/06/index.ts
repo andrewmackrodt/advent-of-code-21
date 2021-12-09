@@ -1,25 +1,26 @@
 import { readFileSync } from 'fs'
 
-export function solve(input: string, days = 80): number {
-    const state = input.split(',').map(n => parseInt(n, 10))
+export function solve(input: string, days: number): number {
+    const state = new Array(9).fill(0)
+
+    input.split(',').map(s => {
+        const timer = parseInt(s, 10)
+        state[timer]++
+    })
 
     for (let d = 0; d < days; d++) {
-        for (let i = 0, len = state.length; i < len; i++) {
-            if (state[i] === 0) {
-                state.push(8)
-                state[i] = 6
-            } else {
-                state[i]--
-            }
-        }
+        const spawn = state.shift()
+        state[6] += spawn
+        state.push(spawn)
     }
 
-    return state.length
+    return state.reduce((res, cur) => res + cur)
 }
 
 // print solution to terminal if invoked directly
 if (require.main === module) {
     const input = readFileSync(__dirname + '/input.txt').toString()
 
-    console.log(solve(input))
+    console.log(solve(input, 80))
+    console.log(solve(input, 256))
 }
