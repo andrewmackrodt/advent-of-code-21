@@ -10,7 +10,7 @@ interface Fold {
     value: number
 }
 
-function parse(input: string): { points: Point[]; folds: Fold[] } {
+function parseInput(input: string): { points: Point[]; folds: Fold[] } {
     const points: Point[] = []
     const folds: Fold[] = []
 
@@ -33,8 +33,7 @@ function parse(input: string): { points: Point[]; folds: Fold[] } {
     return { points, folds }
 }
 
-export function solve(input: string, foldLimit = 0): number {
-    const { points, folds } = parse(input)
+function createState(points: Point[]): number[][] {
     const state: number[][] = []
     for (
         let width = 1 + points.reduce((res, p) => Math.max(res, p.x), 0),
@@ -48,7 +47,10 @@ export function solve(input: string, foldLimit = 0): number {
     for (const point of points) {
         state[point.y][point.x] = 1
     }
-    let foldCount = 0
+    return state
+}
+
+function fold(state: number[][], folds: Fold[]): void {
     for (const fold of folds) {
         switch (fold.axis) {
             case 'x':
@@ -72,19 +74,30 @@ export function solve(input: string, foldLimit = 0): number {
                 }
                 break
         }
-        if (++foldCount >= foldLimit && foldLimit !== 0) {
-            break
-        }
     }
+}
 
-    return state.reduce((total, row) => (
+function parseState(input: string, foldLimit?: number | undefined): number[][] {
+    const { points, folds } = parseInput(input)
+    const state = createState(points)
+    fold(state, folds.slice(0, foldLimit))
+    return state
+}
+
+export function getVisibleDotCount(input: string, foldLimit?: number | undefined): number {
+    return parseState(input, foldLimit).reduce((total, row) => (
         total + row.reduce((rowTotal, cell) => rowTotal + Math.min(cell, 1), 0)
     ), 0)
+}
+
+export function getCode(input: string): string {
+    return parseState(input).map(y => y.map(v => v ? '#' : ' ').join('')).join('\n')
 }
 
 // print solution to terminal if invoked directly
 if (require.main === module) {
     const input = readFileSync(__dirname + '/input.txt').toString()
 
-    console.log(solve(input, 1))
+    console.log(getVisibleDotCount(input, 1))
+    console.log(getCode(input))
 }
