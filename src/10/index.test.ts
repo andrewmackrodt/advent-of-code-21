@@ -1,4 +1,4 @@
-import { solve } from './index'
+import { getMiddleAutocompleteScore, getErrorScore } from './index'
 
 describe('Day 10', () => {
     const input = `[({(<(())[]>[[{[]{<()<>>
@@ -13,6 +13,10 @@ describe('Day 10', () => {
 <{([{{}}[<[[[<>{}]]]>[]]`
 
     it('returns the syntax error score', () => {
-        expect(solve(input)).toEqual(26397)
+        expect(getErrorScore(input)).toEqual(26397)
+    })
+
+    it('returns the middle autocomplete score', () => {
+        expect(getMiddleAutocompleteScore(input)).toEqual(288957)
     })
 })
