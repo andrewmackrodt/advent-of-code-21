@@ -73,7 +73,7 @@ function step(map: number[][]): number {
     return total
 }
 
-export function solve(input: string, steps: number): number {
+export function getTotalFlashes(input: string, steps: number): number {
     const map = input.split('\n').map(line => line.split('').map(char => parseInt(char, 10)))
     let flashes = 0
     for (let i = 0; i < steps; i++) {
@@ -82,9 +82,20 @@ export function solve(input: string, steps: number): number {
     return flashes
 }
 
+export function getStepFlashesSynchronized(input: string): number {
+    const map = input.split('\n').map(line => line.split('').map(char => parseInt(char, 10)))
+    const mapSize = map.length * map[0].length
+    let i = 0
+    for (let isSync = false; ! isSync; i++) {
+        isSync = step(map) === mapSize
+    }
+    return i
+}
+
 // print solution to terminal if invoked directly
 if (require.main === module) {
     const input = readFileSync(__dirname + '/input.txt').toString()
 
-    console.log(solve(input, 100))
+    console.log(getTotalFlashes(input, 100))
+    console.log(getStepFlashesSynchronized(input))
 }
