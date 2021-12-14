@@ -45,5 +45,7 @@ start-RW`],
         })
     })
 
-
+    it('returns the number of paths visiting at most one small cave twice', () => {
+        expect(solve(inputs[0][1], true)).toEqual(36)
+    })
 })
