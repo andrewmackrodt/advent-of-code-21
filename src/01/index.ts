@@ -1,12 +1,13 @@
 import { readFileSync } from 'fs'
 
-export function solve(input: number[], windowSize = 1): number {
+export function solve(input: string, windowSize = 1): number {
+    const depths = input.split('\n').filter(s => s.length > 0).map(s => parseInt(s))
     let previous = Number.MAX_SAFE_INTEGER
     let count = 0
-    const window: number[] = input.slice(0, windowSize - 1)
+    const window: number[] = depths.slice(0, windowSize - 1)
 
-    for (let i = window.length; i < input.length; i++) {
-        window.push(input[i])
+    for (let i = window.length; i < depths.length; i++) {
+        window.push(depths[i])
         const current = window.reduce((res, cur) => res + cur)
 
         if (current > previous) {
@@ -22,11 +23,7 @@ export function solve(input: number[], windowSize = 1): number {
 
 // print solution to terminal if invoked directly
 if (require.main === module) {
-    const input = readFileSync(__dirname + '/input.txt')
-        .toString()
-        .split('\n')
-        .filter(s => s.length > 0)
-        .map(s => parseInt(s))
+    const input = readFileSync(__dirname + '/input.txt').toString()
 
     console.log(solve(input))
     console.log(solve(input, 3))

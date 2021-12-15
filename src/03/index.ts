@@ -20,8 +20,9 @@ function getSignificantBits(input: string[]) : string[] {
     return countBitsEnabled.map(c => c >= minSignificantCount ? '1' : '0')
 }
 
-export function getPowerConsumption(input: string[]): number {
-    const significantBits = getSignificantBits(input)
+export function getPowerConsumption(input: string): number {
+    const arrayOfBits = input.split('\n').filter(s => s.length > 0)
+    const significantBits = getSignificantBits(arrayOfBits)
     const gammaBits: number[] = []
     const epsilonBits: number[] = []
 
@@ -41,7 +42,7 @@ export function getPowerConsumption(input: string[]): number {
     return gamma * epsilon
 }
 
-export function getLifeSupportRating(input: string[]): number {
+export function getLifeSupportRating(input: string): number {
     const filterInput = (
         input: string[],
         i: number,
@@ -54,10 +55,11 @@ export function getLifeSupportRating(input: string[]): number {
         return input.filter(s => cb(s[i], getSignificantBits(input)[i]))
     }
 
-    let oxygenBits = input
-    let co2 = input
+    const arrayOfBits = input.split('\n').filter(s => s.length > 0)
+    let oxygenBits = arrayOfBits
+    let co2 = arrayOfBits
 
-    for (let i = 0; i < input[0].length; i++) {
+    for (let i = 0; i < arrayOfBits[0].length; i++) {
         oxygenBits = filterInput(oxygenBits, i, (a, b) => a === b)
         co2 = filterInput(co2, i, (a, b) => a !== b)
     }
@@ -70,10 +72,7 @@ export function getLifeSupportRating(input: string[]): number {
 
 // print solution to terminal if invoked directly
 if (require.main === module) {
-    const input = readFileSync(__dirname + '/input.txt')
-        .toString()
-        .split('\n')
-        .filter(s => s.length > 0)
+    const input = readFileSync(__dirname + '/input.txt').toString()
 
     console.log(getPowerConsumption(input))
     console.log(getLifeSupportRating(input))
