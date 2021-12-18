@@ -5,12 +5,13 @@ cd "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 
 function build() {
   clean
+  echo -n "Building src .. "
+  tsc --outDir "out"
+  echo "ok"
   cd src
-  for d in $(find . -mindepth 1 -maxdepth 1 -type d); do
-    echo -n "Building $d .. "
+  for d in $(find . -mindepth 1 -maxdepth 1 -type d | sort -n); do
+    echo -n "Copying files for $d .. "
     cd "$d"
-    mkdir -p "../../out/$d"
-    tsc --outDir "../../out/$d"
     find . -mindepth 1 -maxdepth 1 -type f -not -name '*.ts' -exec cp {} "../../out/$d" \;
     echo "ok"
     cd ..
