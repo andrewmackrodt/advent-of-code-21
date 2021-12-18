@@ -22,10 +22,14 @@ export function solve(input: string, options?: Options): number {
     return options?.method === 'accurate' ? x * y : x * z
 }
 
+//region internal
+export const partOne = (input: string) => solve(input)
+export const partTwo = (input: string) => solve(input, { method: 'accurate' })
+
 // print solution to terminal if invoked directly
 if (require.main === module) {
     const input = readFileSync(__dirname + '/input.txt').toString()
-
-    console.log(solve(input))
-    console.log(solve(input, { method: 'accurate' }))
+    console.log(partOne(input))
+    console.log(partTwo(input))
 }
+//endregion

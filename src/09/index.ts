@@ -52,10 +52,14 @@ export function getLargestBasinsLengthMultiplied(input: string, size?: number | 
         .reduce((total, b) => b.length * (total || 1), 0)
 }
 
+//region internal
+export const partOne = (input: string) => getRiskLevelOfLowPoints(input)
+export const partTwo = (input: string) => getLargestBasinsLengthMultiplied(input, 3)
+
 // print solution to terminal if invoked directly
 if (require.main === module) {
     const input = readFileSync(__dirname + '/input.txt').toString()
-
-    console.log(getRiskLevelOfLowPoints(input))
-    console.log(getLargestBasinsLengthMultiplied(input, 3))
+    console.log(partOne(input))
+    console.log(partTwo(input))
 }
+//endregion

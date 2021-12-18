@@ -165,10 +165,14 @@ export function solve(input: string, multiplier = 1): number {
     return risk[end]
 }
 
+//region internal
+export const partOne = (input: string) => solve(input)
+export const partTwo = (input: string) => solve(input, 5)
+
 // print solution to terminal if invoked directly
 if (require.main === module) {
     const input = readFileSync(__dirname + '/input.txt').toString()
-
-    console.log(solve(input))
-    console.log(solve(input, 5))
+    console.log(partOne(input))
+    console.log(partTwo(input))
 }
+//endregion

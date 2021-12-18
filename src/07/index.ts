@@ -51,10 +51,14 @@ export function solve(input: string, options?: Options): number {
     }
 }
 
+//region internal
+export const partOne = (input: string) => solve(input)
+export const partTwo = (input: string) => solve(input, { burn: 'linear' })
+
 // print solution to terminal if invoked directly
 if (require.main === module) {
     const input = readFileSync(__dirname + '/input.txt').toString()
-
-    console.log(solve(input))
-    console.log(solve(input, { burn: 'linear' }))
+    console.log(partOne(input))
+    console.log(partTwo(input))
 }
+//endregion

@@ -122,10 +122,14 @@ export function getUniqueValidVelocityCount(input: string): number {
     return getVelocities(input).length
 }
 
+//region internal
+export const partOne = (input: string) => getMaxY(input)
+export const partTwo = (input: string) => getUniqueValidVelocityCount(input)
+
 // print solution to terminal if invoked directly
 if (require.main === module) {
     const input = readFileSync(__dirname + '/input.txt').toString()
-
-    console.log(getMaxY(input))
-    console.log(getUniqueValidVelocityCount(input))
+    console.log(partOne(input))
+    console.log(partTwo(input))
 }
+//endregion

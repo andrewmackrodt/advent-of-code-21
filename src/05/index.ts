@@ -62,10 +62,14 @@ export function solve(input: string, options?: Options): number {
     return field.flat().filter(n => n > 1).length
 }
 
+//region internal
+export const partOne = (input: string) => solve(input)
+export const partTwo = (input: string) => solve(input, { diagonal: true })
+
 // print solution to terminal if invoked directly
 if (require.main === module) {
     const input = readFileSync(__dirname + '/input.txt').toString()
-
-    console.log(solve(input))
-    console.log(solve(input, { diagonal: true }))
+    console.log(partOne(input))
+    console.log(partTwo(input))
 }
+//endregion

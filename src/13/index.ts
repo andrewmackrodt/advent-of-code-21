@@ -94,10 +94,14 @@ export function getCode(input: string): string {
     return parseState(input).map(y => y.map(v => v ? '#' : ' ').join('')).join('\n')
 }
 
+//region internal
+export const partOne = (input: string) => getVisibleDotCount(input, 1)
+export const partTwo = (input: string) => getCode(input)
+
 // print solution to terminal if invoked directly
 if (require.main === module) {
     const input = readFileSync(__dirname + '/input.txt').toString()
-
-    console.log(getVisibleDotCount(input, 1))
-    console.log(getCode(input))
+    console.log(partOne(input))
+    console.log(partTwo(input))
 }
+//endregion

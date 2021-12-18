@@ -50,10 +50,14 @@ export function sumOutputs(input: string): number {
     return result
 }
 
+//region internal
+export const partOne = (input: string) => countOccurrences(input, [2, 3, 4, 7])
+export const partTwo = (input: string) => sumOutputs(input)
+
 // print solution to terminal if invoked directly
 if (require.main === module) {
     const input = readFileSync(__dirname + '/input.txt').toString()
-
-    console.log(countOccurrences(input, [2, 3, 4, 7]))
-    console.log(sumOutputs(input))
+    console.log(partOne(input))
+    console.log(partTwo(input))
 }
+//endregion

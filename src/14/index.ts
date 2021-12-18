@@ -59,10 +59,14 @@ export function solve(input: string, steps: number): number {
     return max - min
 }
 
+//region internal
+export const partOne = (input: string) => solve(input, 10)
+export const partTwo = (input: string) => solve(input, 40)
+
 // print solution to terminal if invoked directly
 if (require.main === module) {
     const input = readFileSync(__dirname + '/input.txt').toString()
-
-    console.log(solve(input, 10))
-    console.log(solve(input, 40))
+    console.log(partOne(input))
+    console.log(partTwo(input))
 }
+//endregion

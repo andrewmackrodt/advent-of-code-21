@@ -109,10 +109,14 @@ export function solve(
     return routes.length
 }
 
+//region internal
+export const partOne = (input: string) => solve(input)
+export const partTwo = (input: string) => solve(input, true)
+
 // print solution to terminal if invoked directly
 if (require.main === module) {
     const input = readFileSync(__dirname + '/input.txt').toString()
-
-    console.log(solve(input))
-    console.log(solve(input, true))
+    console.log(partOne(input))
+    console.log(partTwo(input))
 }
+//endregion

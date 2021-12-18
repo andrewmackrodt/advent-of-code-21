@@ -92,10 +92,14 @@ export function getStepFlashesSynchronized(input: string): number {
     return i
 }
 
+//region internal
+export const partOne = (input: string) => getTotalFlashes(input, 100)
+export const partTwo = (input: string) => getStepFlashesSynchronized(input)
+
 // print solution to terminal if invoked directly
 if (require.main === module) {
     const input = readFileSync(__dirname + '/input.txt').toString()
-
-    console.log(getTotalFlashes(input, 100))
-    console.log(getStepFlashesSynchronized(input))
+    console.log(partOne(input))
+    console.log(partTwo(input))
 }
+//endregion

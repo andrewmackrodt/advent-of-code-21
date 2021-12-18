@@ -144,10 +144,14 @@ export function sumPacketVersions(input: string): number {
     return sumVersions(packet)
 }
 
+//region internal
+export const partOne = (input: string) => sumPacketVersions(input)
+export const partTwo = (input: string) => decode(input).value
+
 // print solution to terminal if invoked directly
 if (require.main === module) {
     const input = readFileSync(__dirname + '/input.txt').toString()
-
-    console.log(sumPacketVersions(input))
-    console.log(decode(input).value)
+    console.log(partOne(input))
+    console.log(partTwo(input))
 }
+//endregion

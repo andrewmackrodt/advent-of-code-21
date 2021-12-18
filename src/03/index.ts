@@ -70,10 +70,14 @@ export function getLifeSupportRating(input: string): number {
     return oxygen * epsilon
 }
 
+//region internal
+export const partOne = (input: string) => getPowerConsumption(input)
+export const partTwo = (input: string) => getLifeSupportRating(input)
+
 // print solution to terminal if invoked directly
 if (require.main === module) {
     const input = readFileSync(__dirname + '/input.txt').toString()
-
-    console.log(getPowerConsumption(input))
-    console.log(getLifeSupportRating(input))
+    console.log(partOne(input))
+    console.log(partTwo(input))
 }
+//endregion

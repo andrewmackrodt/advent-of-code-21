@@ -94,10 +94,14 @@ export function getMiddleAutocompleteScore(input: string): number {
     return scores[middleIdx].score
 }
 
+//region internal
+export const partOne = (input: string) => getErrorScore(input)
+export const partTwo = (input: string) => getMiddleAutocompleteScore(input)
+
 // print solution to terminal if invoked directly
 if (require.main === module) {
     const input = readFileSync(__dirname + '/input.txt').toString()
-
-    console.log(getErrorScore(input))
-    console.log(getMiddleAutocompleteScore(input))
+    console.log(partOne(input))
+    console.log(partTwo(input))
 }
+//endregion

@@ -59,10 +59,14 @@ export function getLosingBoardScore(input: string): number {
     return lastScore
 }
 
+//region internal
+export const partOne = (input: string) => getWinningBoardScore(input)
+export const partTwo = (input: string) => getLosingBoardScore(input)
+
 // print solution to terminal if invoked directly
 if (require.main === module) {
     const input = readFileSync(__dirname + '/input.txt').toString()
-
-    console.log(getWinningBoardScore(input))
-    console.log(getLosingBoardScore(input))
+    console.log(partOne(input))
+    console.log(partTwo(input))
 }
+//endregion
