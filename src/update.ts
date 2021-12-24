@@ -58,6 +58,31 @@ async function main(): Promise<void> {
             await new Promise<string>(resolve => setTimeout(resolve, 2000))
         }
         //endregion
+        //region download input
+        const inputFile = join(outDir, 'input.txt')
+        if ( ! existsSync(inputFile)) {
+            console.info(`updating input for day ${day} ..`)
+            if ( ! sessionId) {
+                console.error('env.SESSION_ID is not set')
+                process.exit(1)
+            }
+            const url = `https://adventofcode.com/${year}/day/${day}/input`
+            const response = await new Promise<string>((resolve, reject) => {
+                const req = get(url, { headers: { cookie: `session=${sessionId}` } }, (res) => {
+                    const buffer: string[] = []
+                    res.on('data', data => buffer.push(data.toString()))
+                    res.on('end', () => {
+                        const data = buffer.join('')
+                        if (res.statusCode !== 200) return reject(data)
+                        else resolve(data)
+                    })
+                })
+
+                req.on('error', reject)
+            })
+            writeFileSync(inputFile, response.replace(/\n$/, ''))
+        }
+        //endregion
         //region convert markdown
         const html = readFileSync(cacheFile).toString('utf-8')
         const articles = html.match(/<article.+?<\/article>/gs)
