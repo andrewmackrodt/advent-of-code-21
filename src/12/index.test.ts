@@ -1,6 +1,25 @@
 import { solve } from './index'
 
 describe('Day 12', () => {
+    const input = `fs-end
+he-DX
+fs-he
+start-DX
+pj-DX
+end-zg
+zg-sl
+zg-pj
+pj-he
+RW-he
+fs-DX
+pj-RW
+zg-RW
+start-pj
+he-WI
+zg-he
+pj-fs
+start-RW`
+
     const inputs: [number, string][] = [
         [10, `start-A
 start-b
@@ -19,24 +38,7 @@ HN-end
 kj-sa
 kj-HN
 kj-dc`],
-        [226, `fs-end
-he-DX
-fs-he
-start-DX
-pj-DX
-end-zg
-zg-sl
-zg-pj
-pj-he
-RW-he
-fs-DX
-pj-RW
-zg-RW
-start-pj
-he-WI
-zg-he
-pj-fs
-start-RW`],
+        [226, input],
     ]
 
     inputs.map(([expected, input]) => {

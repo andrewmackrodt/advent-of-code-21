@@ -18,6 +18,9 @@
             font-weight: bold;
             margin-bottom: 0.25em;
         }
+        select {
+            padding: 0.25em 0.5em;
+        }
         textarea, button {
             border-radius: 0.25em;
             padding: 0.75em;
@@ -74,6 +77,29 @@
     <h1>Advent of Code 2021 - Day {{ day }}: {{ title }}</h1>
     <p><a href="https://adventofcode.com/2021/day/{{ day }}">View Task</a></p>
 </div>
+<div style="margin: 1em 0">
+    <label for="day">Select Day</label>
+    <select id="day" name="day" onchange="redirectToDay(this)">
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+        <option value="11">11</option>
+        <option value="12">12</option>
+        <option value="13">13</option>
+        <option value="14">14</option>
+        <option value="15">15</option>
+        <option value="16">16</option>
+        <option value="17">17</option>
+        <option value="18">18</option>
+    </select>
+</div>
 <div>
     <div>
         <label for="input">Input</label>
@@ -113,6 +139,12 @@
     const p1Elapsed = document.getElementById('p1_elapsed')
     const p2Result = document.getElementById('p2_result')
     const p2Elapsed = document.getElementById('p2_elapsed')
+
+    function redirectToDay(e) {
+        const day = `0${e.value}`.slice(-2)
+        const url = window.location.href.replace(/\/[0-9]+\//, `/${day}/`)
+        window.location.href = url
+    }
 
     function solveOnClick() {
         button.disabled = true
