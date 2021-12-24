@@ -12,13 +12,14 @@ function build() {
   for d in $(find . -mindepth 1 -maxdepth 1 -type d | sort -n); do
     echo -n "Copying files for $d .. "
     cd "$d"
-    find . -mindepth 1 -maxdepth 1 -type f -not -name '*.ts' -exec cp {} "../../out/$d" \;
+    basename=$(basename "$(pwd)")
+    find . -mindepth 1 -maxdepth 1 -type f -not -name '*.ts' -exec cp {} "../../out/${basename}" \;
     day=$(echo "${d}" | sed -E 's/[^1-9]+//')
     title=$(perl -ne 'print $1 if /^### Day [0-9]+: (.+)/' README.md)
     input=$(perl -0777 -ne "print \$1 if /input = [\`']([^\`']+)/" index.test.ts | perl -pe 's/\n/\\n/')
     sed -E "s/\{\{ day \}\}/${day}/" ../../index.html \
       | sed -E "s/\{\{ title \}\}/${title}/" \
-      | sed -E "s/\{\{ input \}\}/${input}/" >"../../out/${d}/index.html"
+      | sed -E "s/\{\{ input \}\}/${input}/" >"../../out/${basename}/index.html"
     echo "ok"
     cd ..
   done
