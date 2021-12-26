@@ -10,7 +10,7 @@ const [nowYear, nowMonth, nowDay] = new Date().toLocaleString('en-GB', { timeZon
 
 const minYear = 2015
 const maxYear = nowMonth < 12 ? nowYear - 1 : nowYear
-const maxDay = nowMonth < 12 ? 25 : nowDay
+const maxDay = nowMonth < 12 ? 25 : Math.min(nowDay, 25)
 const year = maxYear
 
 if (year < minYear || maxYear < year) {
