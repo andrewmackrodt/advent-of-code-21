@@ -1,7 +1,7 @@
 import { readFileSync } from 'fs'
 
 // PriorityQueue implementation - https://stackoverflow.com/a/42919752/650329
-class PriorityQueue<T> implements Iterable<T> {
+export class PriorityQueue<T> implements Iterable<T> {
     private static readonly TOP = 0
     private readonly heap: T[]
     private readonly comparator: (a: T, b: T) => boolean
