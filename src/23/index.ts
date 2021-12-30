@@ -70,7 +70,7 @@ class Organizer {
             organizer.steps.push([strState, energy])
 
             if (strState === endState) {
-                if (process.env.DEBUG) {
+                if (process?.env.DEBUG) {
                     process.stdout.write(`found solution requiring ${organizer.steps.length} steps and ${energy} energy\n`)
                 }
 
@@ -304,7 +304,7 @@ export function partOne(input: string): number {
         process.stdout.write(`${str}\n${state}\t${energy}\n\n`)
     }
 
-    if (process.env.DEBUG) {
+    if (process?.env.DEBUG) {
         steps.map(print)
     }
 
