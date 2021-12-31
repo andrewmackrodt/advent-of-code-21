@@ -1,6 +1,8 @@
 # Advent of Code 2021
 
-TypeScript/Node 
+Demo: https://andrewmackrodt.github.io/advent-of-code-21/
+
+TypeScript/Node
 
 ```sh
 # print solution for day 1
