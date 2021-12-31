@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Advent of Code 2021 - Day {{ day }}</title>
+    <title>Advent of Code 2021</title>
     <style rel="stylesheet">
         html {
             font-family: arial, sans-serif;
@@ -12,6 +12,12 @@
         h1 {
             font-size: 1.75em;
             line-height: 1em;
+        }
+        nav span {
+            display: inline-block;
+        }
+        nav span:not(:last-child) {
+            margin-right: 0.5em;
         }
         label {
             display: block;
@@ -42,6 +48,10 @@
             background-color: slateblue;
             cursor: pointer;
         }
+        button:disabled {
+            background-color: lightslategray;
+            cursor: not-allowed;
+        }
         table {
             border-collapse: collapse;
             font-family: monospace;
@@ -69,17 +79,18 @@
             color: red;
         }
     </style>
-    <script>const exports = {}, module = null, require = () => null</script>
-    <script src="index.js"></script>
 </head>
 <body>
 <div>
-    <h1>Advent of Code 2021 - Day {{ day }}: {{ title }}</h1>
-    <p><a href="https://adventofcode.com/2021/day/{{ day }}">View Task</a></p>
+    <h1 id="pageTitle">Advent of Code 2021</h1>
+    <nav>
+        <span><a id="taskLink" href="#" target="_blank">View Task</a></span>
+        <span><a id="srcLink" href="#" target="_blank">View Source</a></span>
+    </nav>
 </div>
 <div style="margin: 1em 0">
     <label for="day">Select Day</label>
-    <select id="day" name="day" onchange="redirectToDay(this)">
+    <select id="day" name="day" onchange="setDay(this.value)">
         <option value="1">1</option>
         <option value="2">2</option>
         <option value="3">3</option>
@@ -111,11 +122,11 @@
     <div>
         <label for="input">Input</label>
         <div>
-            <textarea id="input" name="input">{{ input }}</textarea>
+            <textarea id="input" name="input">Loading ..</textarea>
         </div>
     </div>
     <div>
-        <button onclick="solveOnClick()">Solve</button>
+        <button id="submit" onclick="submit()">Solve</button>
     </div>
 </div>
 <table>
@@ -129,60 +140,145 @@
     <tbody>
     <tr>
         <th>1.</th>
-        <td id="p1_result">-</td>
-        <td id="p1_elapsed">-</td>
+        <td id="partOneValue">-</td>
+        <td id="partOneElapsed">-</td>
     </tr>
     <tr>
         <th>2.</th>
-        <td id="p2_result">-</td>
-        <td id="p2_elapsed">-</td>
+        <td id="partTwoValue">-</td>
+        <td id="partTwoElapsed">-</td>
     </tr>
     </tbody>
 </table>
 <script>
-    const input = document.getElementById('input')
-    const button = document.querySelector('button')
-    const p1Result = document.getElementById('p1_result')
-    const p1Elapsed = document.getElementById('p1_elapsed')
-    const p2Result = document.getElementById('p2_result')
-    const p2Elapsed = document.getElementById('p2_elapsed')
+    const baseUrl = `${window.location.origin}${window.location.pathname}`.replace(/\/[^/]*$/, '')
+    let worker
 
-    function redirectToDay(e) {
-        const day = `0${e.value}`.slice(-2)
-        const url = window.location.href.replace(/\/[0-9]+\//, `/${day}/`)
-        window.location.href = url
+    const titleElement           = document.getElementById('pageTitle')
+    const taskLinkElement        = document.getElementById('taskLink')
+    const srcLinkElement         = document.getElementById('srcLink')
+    const dayElement             = document.getElementById('day')
+    const inputElement           = document.getElementById('input')
+    const submitElement          = document.getElementById('submit')
+    const partOneValueElement    = document.getElementById('partOneValue')
+    const partOneElapsedElement  = document.getElementById('partOneElapsed')
+    const partTwoValueElement    = document.getElementById('partTwoValue')
+    const partTwoElapsedElement  = document.getElementById('partTwoElapsed')
+
+    async function fetch(name) {
+        return new Promise((resolve, reject) => {
+            const req = new XMLHttpRequest()
+            req.onreadystatechange = () => {
+                if (req.readyState !== 4) return
+                if (req.status === 200) {
+                    resolve(req.responseText)
+                } else {
+                    reject(`${req.status} ${req.statusText}`)
+                }
+            }
+            req.open('GET', `${baseUrl}/${name}`)
+            req.send()
+        })
     }
 
-    function solveOnClick() {
-        button.disabled = true
-        p1Result.innerText = '-'
-        p1Elapsed.innerText = '-'
-        p2Result.innerText = '-'
-        p2Elapsed.innerText = '-'
+    async function setDay(day) {
+        if (worker) {
+            worker.terminate()
+            worker = undefined
+        }
+
+        const dayZeroPad = `0${day}`.slice(-2)
+
+        document.title                   = `Advent of Code 2021 - Day ${day}`
+        titleElement.innerText           = document.title
+        taskLinkElement.href             = `https://adventofcode.com/2021/day/${day}`
+        srcLinkElement.href              = `https://github.com/andrewmackrodt/advent-of-code-21/blob/main/src/${dayZeroPad}/index.ts`
+        inputElement.value               = 'Loading ..'
+        partOneValueElement.innerText    = '-'
+        partOneElapsedElement.innerText  = '-'
+        partTwoValueElement.innerText    = '-'
+        partTwoElapsedElement.innerText  = '-'
+        submitElement.disabled           = true
+
+        try {
+            inputElement.value = await fetch(`${dayZeroPad}/sample.txt`)
+        } catch (e) {
+            inputElement.value = e
+        }
+
+        worker = new Worker(window.URL.createObjectURL(new Blob([`
+            const exports = {}, module = null, process = null, require = () => null
+
+            importScripts('${baseUrl}/${dayZeroPad}/index.js')
+
+            onmessage = ({ data: { part, input } }) => {
+                const result = { value: null, error: null }
+
+                try {
+                    switch (part) {
+                        case 1:
+                            result.value = partOne(input)
+                            break
+                        case 2:
+                            result.value = partTwo(input)
+                            break
+                    }
+                } catch (e) {
+                    result.error = e
+                }
+
+                postMessage(result)
+            }
+        `], { type: 'text/javascript' })))
+
+        const search = window.location.href.match(/(\?[^#]+)/)?.[1] ?? ''
+
+        window.history.pushState(day, '', `${baseUrl}/index.html#!/day/${day}/${search}`)
+
+        submitElement.disabled = false
+    }
+
+    const initialDay = window.location.hash.match(/\/day\/([1-9]|1[0-9]|2[0-5])\//)?.[1] ?? 1
+    dayElement.value = initialDay
+    setDay(initialDay)
+
+    async function part(part) {
+        return new Promise((resolve, reject) => {
+            worker.onmessage = ({ data: {value, error } }) => {
+                if ( ! error) resolve(value)
+                else reject(error)
+            }
+
+            worker.postMessage({ part, input: inputElement.value })
+        })
+    }
+
+    async function submit() {
+        partOneValueElement.innerText    = '-'
+        partOneElapsedElement.innerText  = '-'
+        partTwoValueElement.innerText    = '-'
+        partTwoElapsedElement.innerText  = '-'
+        submitElement.disabled           = true
 
         try {
             const startedAt = window.performance.now()
-            const result = partOne(input.value)
-            p1Result.innerText = result
+            partOneValueElement.innerText = await part(1)
             const elapsed = Math.round((window.performance.now() - startedAt) * 10) / 10
-            p1Elapsed.innerText = `${elapsed} ms`
+            partOneElapsedElement.innerText = `${elapsed} ms`
         } catch (e) {
-            p1Result.innerHTML = `<span class="error">ERROR: ${e}</span>`
-        } finally {
-            button.disabled = false
+            partOneValueElement.innerHTML = `<span class="error">ERROR: ${e}</span>`
         }
 
         try {
             const startedAt = window.performance.now()
-            const result = partTwo(input.value)
-            p2Result.innerText = result
+            partTwoValueElement.innerText = await part(2)
             const elapsed = Math.round((window.performance.now() - startedAt) * 10) / 10
-            p2Elapsed.innerText = `${elapsed} ms`
+            partTwoElapsedElement.innerText = `${elapsed} ms`
         } catch (e) {
-            p2Result.innerHTML = `<span class="error">ERROR: ${e}</span>`
-        } finally {
-            button.disabled = false
+            partTwoValueElement.innerHTML = `<span class="error">ERROR: ${e}</span>`
         }
+
+        submitElement.disabled = false
     }
 </script>
 </body>
