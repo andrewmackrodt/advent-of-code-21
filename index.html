@@ -238,7 +238,20 @@
         }
 
         worker = new Worker(window.URL.createObjectURL(new Blob([`
-            const exports = {}, module = null, process = null, require = () => null
+            const exports = {}, module = null
+
+            const require = (path) => {
+                console.debug(\`ignoring require('\${path}')\`)
+            }
+
+            const process = {
+                env: ${JSON.stringify(search.slice(1).split('&').reduce((qs, str) => {
+                    const [k, v] = str.split('=').map(s => decodeURIComponent(s))
+                    qs[k] = v
+                    return qs }, {}))},
+                stdout: { write: (str) => console.log(str) },
+                stderr: { write: (str) => console.error(str) },
+            }
 
             importScripts('${baseUrl}/${dayZeroPad}/index.js')
 
@@ -305,6 +318,7 @@
 
         try {
             const startedAt = window.performance.now()
+            partOneValueElement.innerText = 'Calculating ..'
             partOneValueElement.innerText = await part(1)
             const elapsed = Math.round((window.performance.now() - startedAt) * 10) / 10
             partOneElapsedElement.innerText = `${elapsed} ms`
@@ -314,6 +328,7 @@
 
         try {
             const startedAt = window.performance.now()
+            partTwoValueElement.innerText = 'Calculating ..'
             partTwoValueElement.innerText = await part(2)
             const elapsed = Math.round((window.performance.now() - startedAt) * 10) / 10
             partTwoElapsedElement.innerText = `${elapsed} ms`
@@ -331,6 +346,7 @@
     snowElement.style.opacity = '0.5'
     document.body.appendChild(snowElement)
     new Snow.default({ id: 'snow', min_size: 1, max_size: 2 }).start()
+    snowElement.style.zIndex = '-1'
 </script>
 </body>
 </html>
