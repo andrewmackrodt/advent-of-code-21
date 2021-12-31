@@ -117,6 +117,7 @@
         <option value="24">24</option>
         <option value="25">25</option>
     </select>
+    <a id="prev">Prev</a> <a id="next">Next</a>
 </div>
 <div>
     <div>
@@ -158,6 +159,8 @@
     const taskLinkElement        = document.getElementById('taskLink')
     const srcLinkElement         = document.getElementById('srcLink')
     const dayElement             = document.getElementById('day')
+    const prevElement            = document.getElementById('prev')
+    const nextElement            = document.getElementById('next')
     const inputElement           = document.getElementById('input')
     const submitElement          = document.getElementById('submit')
     const partOneValueElement    = document.getElementById('partOneValue')
@@ -187,13 +190,19 @@
             worker = undefined
         }
 
+        day = parseInt(day, 10)
         const dayZeroPad = `0${day}`.slice(-2)
+        const search = window.location.href.match(/(\?[^#]+)/)?.[1] ?? ''
 
         document.title                   = `Advent of Code 2021 - Day ${day}`
         titleElement.innerText           = document.title
         taskLinkElement.href             = `https://adventofcode.com/2021/day/${day}`
         srcLinkElement.href              = `https://github.com/andrewmackrodt/advent-of-code-21/blob/main/src/${dayZeroPad}/index.ts`
         dayElement.value                 = day
+        prevElement.style.display        = day >  1 ? 'inline' : 'none'
+        prevElement.href                 = `#!/day/${day - 1}/${search}`
+        nextElement.style.display        = day < 25 ? 'inline' : 'none'
+        nextElement.href                 = `#!/day/${day + 1}/${search}`
         inputElement.value               = 'Loading ..'
         partOneValueElement.innerText    = '-'
         partOneElapsedElement.innerText  = '-'
@@ -235,15 +244,21 @@
         submitElement.disabled = false
 
         if (pushState) {
-            const search = window.location.href.match(/(\?[^#]+)/)?.[1] ?? ''
-
             window.history.pushState(day, '', `${baseUrl}/index.html#!/day/${day}/${search}`)
         }
     }
 
-    const initialDay = window.location.hash.match(/\/day\/([1-9]|1[0-9]|2[0-5])\//)?.[1] ?? 1
+    const initialDay = window.location.hash.match(/\/day\/([1-9]|1[0-9]|2[0-5])\//)?.[1] ?? '1'
     setDay(initialDay)
-    window.onpopstate = ({ state }) => setDay(state, false)
+    window.onpopstate = ({ state }) => {
+        if ( ! state) {
+            state = window.location.hash.match(/\/day\/([1-9]|1[0-9]|2[0-5])\//)?.[1]
+        }
+        if ( ! state) {
+            return
+        }
+        setDay(state, false)
+    }
 
     async function part(part) {
         return new Promise((resolve, reject) => {
