@@ -181,7 +181,7 @@
         })
     }
 
-    async function setDay(day) {
+    async function setDay(day, pushState = true) {
         if (worker) {
             worker.terminate()
             worker = undefined
@@ -193,6 +193,7 @@
         titleElement.innerText           = document.title
         taskLinkElement.href             = `https://adventofcode.com/2021/day/${day}`
         srcLinkElement.href              = `https://github.com/andrewmackrodt/advent-of-code-21/blob/main/src/${dayZeroPad}/index.ts`
+        dayElement.value                 = day
         inputElement.value               = 'Loading ..'
         partOneValueElement.innerText    = '-'
         partOneElapsedElement.innerText  = '-'
@@ -231,16 +232,18 @@
             }
         `], { type: 'text/javascript' })))
 
-        const search = window.location.href.match(/(\?[^#]+)/)?.[1] ?? ''
-
-        window.history.pushState(day, '', `${baseUrl}/index.html#!/day/${day}/${search}`)
-
         submitElement.disabled = false
+
+        if (pushState) {
+            const search = window.location.href.match(/(\?[^#]+)/)?.[1] ?? ''
+
+            window.history.pushState(day, '', `${baseUrl}/index.html#!/day/${day}/${search}`)
+        }
     }
 
     const initialDay = window.location.hash.match(/\/day\/([1-9]|1[0-9]|2[0-5])\//)?.[1] ?? 1
-    dayElement.value = initialDay
     setDay(initialDay)
+    window.onpopstate = ({ state }) => setDay(state, false)
 
     async function part(part) {
         return new Promise((resolve, reject) => {
