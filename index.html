@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Advent of Code 2021</title>
+    <style rel="stylesheet">
+        html {
+            font-family: arial, sans-serif;
+            padding: 0 1em;
+        }
+        h1 {
+            font-size: 1.75em;
+            line-height: 1em;
+        }
+        nav span {
+            display: inline-block;
+        }
+        nav span:not(:last-child) {
+            margin-right: 0.5em;
+        }
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 0.25em;
+        }
+        select {
+            padding: 0.25em 0.5em;
+        }
+        textarea, button {
+            border-radius: 0.25em;
+            padding: 0.75em;
+        }
+        textarea {
+            background-color: whitesmoke;
+            border-color: lightgray;
+            height: 16em;
+            width: 56em;
+        }
+        button {
+            background-color: mediumslateblue;
+            border: none;
+            color: whitesmoke;
+            margin: 1em 0;
+            padding: 0.75em 2em;
+        }
+        button:hover {
+            background-color: slateblue;
+            cursor: pointer;
+        }
+        button:disabled {
+            background-color: lightslategray;
+            cursor: not-allowed;
+        }
+        table {
+            border-collapse: collapse;
+            font-family: monospace;
+            margin-top: 1em;
+        }
+        thead tr th {
+            border-top: solid gray 1px;
+        }
+        thead th {
+            text-transform: uppercase;
+        }
+        th:not(:last-child), td:not(:last-child) {
+            padding-right: 2em;
+        }
+        th:last-child, td:last-child {
+            min-width: 5em;
+        }
+        th {
+            text-align: left;
+        }
+        td {
+            white-space: pre;
+        }
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+<div>
+    <h1 id="pageTitle">Advent of Code 2021</h1>
+    <nav>
+        <span><a id="taskLink" href="#" target="_blank">View Task</a></span>
+        <span><a id="srcLink" href="#" target="_blank">View Source</a></span>
+    </nav>
+</div>
+<div style="margin: 1em 0">
+    <label for="day">Select Day</label>
+    <select id="day" name="day" onchange="setDay(this.value)">
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+        <option value="11">11</option>
+        <option value="12">12</option>
+        <option value="13">13</option>
+        <option value="14">14</option>
+        <option value="15">15</option>
+        <option value="16">16</option>
+        <option value="17">17</option>
+        <option value="18">18</option>
+        <option value="19">19</option>
+        <option value="20">20</option>
+        <option value="21">21</option>
+        <option value="22">22</option>
+        <option value="23">23</option>
+        <option value="24">24</option>
+        <option value="25">25</option>
+    </select>
+</div>
+<div>
+    <div>
+        <label for="input">Input</label>
+        <div>
+            <textarea id="input" name="input">Loading ..</textarea>
+        </div>
+    </div>
+    <div>
+        <button id="submit" onclick="submit()">Solve</button>
+    </div>
+</div>
+<table>
+    <thead>
+    <tr>
+        <th style="min-width: 4em">Part</th>
+        <th style="min-width: 20em">Result</th>
+        <th>Time</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <th>1.</th>
+        <td id="partOneValue">-</td>
+        <td id="partOneElapsed">-</td>
+    </tr>
+    <tr>
+        <th>2.</th>
+        <td id="partTwoValue">-</td>
+        <td id="partTwoElapsed">-</td>
+    </tr>
+    </tbody>
+</table>
+<script>
+    const baseUrl = `${window.location.origin}${window.location.pathname}`.replace(/\/[^/]*$/, '')
+    let worker
+
+    const titleElement           = document.getElementById('pageTitle')
+    const taskLinkElement        = document.getElementById('taskLink')
+    const srcLinkElement         = document.getElementById('srcLink')
+    const dayElement             = document.getElementById('day')
+    const inputElement           = document.getElementById('input')
+    const submitElement          = document.getElementById('submit')
+    const partOneValueElement    = document.getElementById('partOneValue')
+    const partOneElapsedElement  = document.getElementById('partOneElapsed')
+    const partTwoValueElement    = document.getElementById('partTwoValue')
+    const partTwoElapsedElement  = document.getElementById('partTwoElapsed')
+
+    async function fetch(name) {
+        return new Promise((resolve, reject) => {
+            const req = new XMLHttpRequest()
+            req.onreadystatechange = () => {
+                if (req.readyState !== 4) return
+                if (req.status === 200) {
+                    resolve(req.responseText)
+                } else {
+                    reject(`${req.status} ${req.statusText}`)
+                }
+            }
+            req.open('GET', `${baseUrl}/${name}`)
+            req.send()
+        })
+    }
+
+    async function setDay(day) {
+        if (worker) {
+            worker.terminate()
+            worker = undefined
+        }
+
+        const dayZeroPad = `0${day}`.slice(-2)
+
+        document.title                   = `Advent of Code 2021 - Day ${day}`
+        titleElement.innerText           = document.title
+        taskLinkElement.href             = `https://adventofcode.com/2021/day/${day}`
+        srcLinkElement.href              = `https://github.com/andrewmackrodt/advent-of-code-21/blob/main/src/${dayZeroPad}/index.ts`
+        inputElement.value               = 'Loading ..'
+        partOneValueElement.innerText    = '-'
+        partOneElapsedElement.innerText  = '-'
+        partTwoValueElement.innerText    = '-'
+        partTwoElapsedElement.innerText  = '-'
+        submitElement.disabled           = true
+
+        try {
+            inputElement.value = await fetch(`${dayZeroPad}/sample.txt`)
+        } catch (e) {
+            inputElement.value = e
+        }
+
+        worker = new Worker(window.URL.createObjectURL(new Blob([`
+            const exports = {}, module = null, process = null, require = () => null
+
+            importScripts('${baseUrl}/${dayZeroPad}/index.js')
+
+            onmessage = ({ data: { part, input } }) => {
+                const result = { value: null, error: null }
+
+                try {
+                    switch (part) {
+                        case 1:
+                            result.value = partOne(input)
+                            break
+                        case 2:
+                            result.value = partTwo(input)
+                            break
+                    }
+                } catch (e) {
+                    result.error = e
+                }
+
+                postMessage(result)
+            }
+        `], { type: 'text/javascript' })))
+
+        const search = window.location.href.match(/(\?[^#]+)/)?.[1] ?? ''
+
+        window.history.pushState(day, '', `${baseUrl}/index.html#!/day/${day}/${search}`)
+
+        submitElement.disabled = false
+    }
+
+    const initialDay = window.location.hash.match(/\/day\/([1-9]|1[0-9]|2[0-5])\//)?.[1] ?? 1
+    dayElement.value = initialDay
+    setDay(initialDay)
+
+    async function part(part) {
+        return new Promise((resolve, reject) => {
+            worker.onmessage = ({ data: {value, error } }) => {
+                if ( ! error) resolve(value)
+                else reject(error)
+            }
+
+            worker.postMessage({ part, input: inputElement.value })
+        })
+    }
+
+    async function submit() {
+        partOneValueElement.innerText    = '-'
+        partOneElapsedElement.innerText  = '-'
+        partTwoValueElement.innerText    = '-'
+        partTwoElapsedElement.innerText  = '-'
+        submitElement.disabled           = true
+
+        try {
+            const startedAt = window.performance.now()
+            partOneValueElement.innerText = await part(1)
+            const elapsed = Math.round((window.performance.now() - startedAt) * 10) / 10
+            partOneElapsedElement.innerText = `${elapsed} ms`
+        } catch (e) {
+            partOneValueElement.innerHTML = `<span class="error">ERROR: ${e}</span>`
+        }
+
+        try {
+            const startedAt = window.performance.now()
+            partTwoValueElement.innerText = await part(2)
+            const elapsed = Math.round((window.performance.now() - startedAt) * 10) / 10
+            partTwoElapsedElement.innerText = `${elapsed} ms`
+        } catch (e) {
+            partTwoValueElement.innerHTML = `<span class="error">ERROR: ${e}</span>`
+        }
+
+        submitElement.disabled = false
+    }
+</script>
+</body>
+</html>
