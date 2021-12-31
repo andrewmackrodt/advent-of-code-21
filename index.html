@@ -6,23 +6,42 @@
     <title>Advent of Code 2021</title>
     <style rel="stylesheet">
         html {
-            font-family: arial, sans-serif;
+            background-color: #0f0f23;
+            color: #ccc;
+            font-family: 'Source Code Pro', monospace;
             padding: 0 1em;
         }
+        html, select, textarea, button {
+            font-size: 14pt;
+        }
         h1 {
-            font-size: 1.75em;
+            color: #00cc00;
             line-height: 1em;
+            padding-right: 0.5em;
         }
-        nav span {
-            display: inline-block;
+        a, button {
+            color: #009900;
+            text-decoration: none;
         }
-        nav span:not(:last-child) {
-            margin-right: 0.5em;
+        a:hover, button:hover {
+            color: #99ff99;
+        }
+        nav {
+            display: table;
+        }
+        nav > * {
+            display: table-cell;
+            vertical-align: top;
         }
         label {
             display: block;
             font-weight: bold;
             margin-bottom: 0.25em;
+        }
+        select, textarea {
+            background-color: #10101a;
+            border: 1px solid #333340;
+            color: #ccc;
         }
         select {
             padding: 0.25em 0.5em;
@@ -32,29 +51,25 @@
             padding: 0.75em;
         }
         textarea {
-            background-color: whitesmoke;
-            border-color: lightgray;
             height: 16em;
             width: 56em;
+            max-width: 90vw;
         }
         button {
-            background-color: mediumslateblue;
+            background: none;
             border: none;
-            color: whitesmoke;
             margin: 1em 0;
-            padding: 0.75em 2em;
+            padding: 0;
         }
         button:hover {
-            background-color: slateblue;
             cursor: pointer;
         }
         button:disabled {
-            background-color: lightslategray;
+            color: lightslategray;
             cursor: not-allowed;
         }
         table {
             border-collapse: collapse;
-            font-family: monospace;
             margin-top: 1em;
         }
         thead tr th {
@@ -81,13 +96,13 @@
     </style>
 </head>
 <body>
-<div>
+<nav>
     <h1 id="pageTitle">Advent of Code 2021</h1>
-    <nav>
-        <span><a id="taskLink" href="#" target="_blank">View Task</a></span>
-        <span><a id="srcLink" href="#" target="_blank">View Source</a></span>
-    </nav>
-</div>
+    <div>
+        <a id="taskLink" href="#" target="_blank">[Task]</a>
+        <a id="srcLink" href="#" target="_blank">[Source]</a>
+    </div>
+</nav>
 <div style="margin: 1em 0">
     <label for="day">Select Day</label>
     <select id="day" name="day" onchange="setDay(this.value)">
@@ -130,7 +145,7 @@
         </div>
     </div>
     <div>
-        <button id="submit" onclick="submit()">Solve</button>
+        <button id="submit" onclick="submit()">[Solve]</button>
     </div>
 </div>
 <table>
@@ -198,7 +213,7 @@
         const dayZeroPad = `0${day}`.slice(-2)
         const search = window.location.href.match(/(\?[^#]+)/)?.[1] ?? ''
 
-        document.title                   = `Advent of Code 2021 - Day ${day}`
+        document.title                   = `Advent of Code 2021: Day ${day}`
         titleElement.innerText           = document.title
         taskLinkElement.href             = `https://adventofcode.com/2021/day/${day}`
         srcLinkElement.href              = `https://github.com/andrewmackrodt/advent-of-code-21/blob/main/src/${dayZeroPad}/index.ts`
@@ -308,6 +323,14 @@
 
         submitElement.disabled = false
     }
+</script>
+<script type="module">
+    import * as Snow from 'https://cdn.jsdelivr.net/gh/radkinz/snow.js@aae2251/snow.js'
+    const snowElement = document.createElement('div')
+    snowElement.id = 'snow'
+    snowElement.style.opacity = '0.5'
+    document.body.appendChild(snowElement)
+    new Snow.default({ id: 'snow', min_size: 1, max_size: 2 }).start()
 </script>
 </body>
 </html>
