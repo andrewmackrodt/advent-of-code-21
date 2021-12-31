@@ -122,6 +122,9 @@
 <div>
     <div>
         <label for="input">Input</label>
+        <div style="margin-bottom: 0.25em">
+            <input type="checkbox" name="inputType" onchange="replaceInput()">load my input</input>
+        </div>
         <div>
             <textarea id="input" name="input">Loading ..</textarea>
         </div>
@@ -161,6 +164,7 @@
     const dayElement             = document.getElementById('day')
     const prevElement            = document.getElementById('prev')
     const nextElement            = document.getElementById('next')
+    const inputTypeElement       = document.querySelector('input[name="inputType"]')
     const inputElement           = document.getElementById('input')
     const submitElement          = document.getElementById('submit')
     const partOneValueElement    = document.getElementById('partOneValue')
@@ -210,8 +214,10 @@
         partTwoElapsedElement.innerText  = '-'
         submitElement.disabled           = true
 
+        const inputFile = inputTypeElement.checked ? 'input.txt' : 'sample.txt'
+
         try {
-            inputElement.value = await fetch(`${dayZeroPad}/sample.txt`)
+            inputElement.value = await fetch(`${dayZeroPad}/${inputFile}`)
         } catch (e) {
             inputElement.value = e
         }
@@ -258,6 +264,10 @@
             return
         }
         setDay(state, false)
+    }
+
+    async function replaceInput() {
+        return setDay(dayElement.value, false)
     }
 
     async function part(part) {
